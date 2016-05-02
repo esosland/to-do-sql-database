@@ -12,8 +12,10 @@ public class TaskTest {
   @After
   public void tearDown() {
     try(Connection con = DB.sql2o.open()) {
-      String sql = "DELETE FROM tasks *;";
-      con.createQuery(sql).executeUpdate();
+      String deleteTasksQuery = "DELETE FROM tasks *;";
+      String deleteCategoriesQuery = "DELETE FROM categories *;";
+      con.createQuery(deleteTasksQuery).executeUpdate();
+      con.createQuery(deleteCategoriesQuery).executeUpdate();
     }
   }
 
@@ -38,14 +40,14 @@ public class TaskTest {
   public void equals_returnsTrueIfDescriptionsAreTheSame() {
     Task firstTask = new Task("Mow the lawn");
     Task secondTask = new Task("Mow the lawn");
-    assertTrue(firstTask.taskEquals(secondTask));
+    assertTrue(firstTask.equals(secondTask));
   }
 
   @Test
   public void save_returnsTrueIfDescriptionsAreTheSame() {
     Task myTask = new Task("Mow the lawn");
     myTask.save();
-    assertTrue(Task.all().get(0).taskEquals(myTask));
+    assertTrue(Task.all().get(0).equals(myTask));
   }
 
   @Test
@@ -61,6 +63,16 @@ public class TaskTest {
     Task myTask = new Task("Mow the lawn");
     myTask.save();
     Task savedTask = Task.find(myTask.getId());
-    assertTrue(myTask.taskEquals(savedTask));
+    assertTrue(myTask.equals(savedTask));
+  }
+
+  @Test
+  public void save_savesCategoryIdIntoDB_true() {
+    Category myCategory = new Category("Household chores");
+    myCategory.save();
+    Task myTask = new Task("Mow the lawn", myCategory.getId());
+    myTask.save();
+    Task savedTask = Task.find(myTask.getId());
+    assertEquals(savedTask.getCategoryId(), myCategory.getId());
   }
 }
