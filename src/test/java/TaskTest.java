@@ -33,5 +33,34 @@ public class TaskTest {
   public void all_emptyAtFirst() {
     assertEquals(Task.all().size(), 0);
   }
-  
+
+  @Test
+  public void equals_returnsTrueIfDescriptionsAreTheSame() {
+    Task firstTask = new Task("Mow the lawn");
+    Task secondTask = new Task("Mow the lawn");
+    assertTrue(firstTask.taskEquals(secondTask));
+  }
+
+  @Test
+  public void save_returnsTrueIfDescriptionsAreTheSame() {
+    Task myTask = new Task("Mow the lawn");
+    myTask.save();
+    assertTrue(Task.all().get(0).taskEquals(myTask));
+  }
+
+  @Test
+  public void save_assignsIdToObject() {
+    Task myTask = new Task("Mow the lawn");
+    myTask.save();
+    Task savedTask = Task.all().get(0);
+    assertEquals(myTask.getId(), savedTask.getId());
+  }
+
+  @Test
+  public void find_findsTaskInDatabase_true() {
+    Task myTask = new Task("Mow the lawn");
+    myTask.save();
+    Task savedTask = Task.find(myTask.getId());
+    assertTrue(myTask.taskEquals(savedTask));
+  }
 }
