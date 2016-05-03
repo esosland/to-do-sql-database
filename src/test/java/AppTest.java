@@ -60,7 +60,7 @@ public class AppTest extends FluentTest {
   public void categoryIsDisplayedTest() {
     Category myCategory = new Category("Household chores");
     myCategory.save();
-    String categoryPath = String.format("http://localhost:4567/%d", myCategory.getId());
+    String categoryPath = String.format("http://localhost:4567/categories/%d", myCategory.getId());
     goTo(categoryPath);
     assertThat(pageSource()).contains("Household chores");
   }
@@ -109,7 +109,7 @@ public class AppTest extends FluentTest {
     firstTask.save();
     Task secondTask = new Task("Do the dishes", myCategory.getId());
     secondTask.save();
-    String categoryPath = String.format("http://localhost:4567/%d", myCategory.getId());
+    String categoryPath = String.format("http://localhost:4567/categories/%d", myCategory.getId());
     goTo(categoryPath);
     assertThat(pageSource()).contains("Mow the lawn");
     assertThat(pageSource()).contains("Do the dishes");
