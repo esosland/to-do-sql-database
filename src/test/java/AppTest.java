@@ -58,10 +58,10 @@ public class AppTest extends FluentTest {
 
   @Test
   public void categoryIsDisplayedTest() {
-    goTo("http://localhost:4567/categories/new");
-    fill("#name").with("Household chores");
-    submit(".btn");
-    click("a", withText("View categories"));
+    Category myCategory = new Category("Household chores");
+    myCategory.save();
+    String categoryPath = String.format("http://localhost:4567/%d", myCategory.getId());
+    goTo(categoryPath);
     assertThat(pageSource()).contains("Household chores");
   }
 
@@ -99,5 +99,19 @@ public class AppTest extends FluentTest {
     click("a", withText("View categories"));
     click("a", withText("Banking"));
     assertThat(pageSource()).contains("Deposit paycheck");
+  }
+
+  @Test
+  public void allTasksDisplayDescriptionOnCategoryPage() {
+    Category myCategory = new Category("Household chores");
+    myCategory.save();
+    Task firstTask = new Task("Mow the lawn", myCategory.getId());
+    firstTask.save();
+    Task secondTask = new Task("Do the dishes", myCategory.getId());
+    secondTask.save();
+    String categoryPath = String.format("http://localhost:4567/%d", myCategory.getId());
+    goTo(categoryPath);
+    assertThat(pageSource()).contains("Mow the lawn");
+    assertThat(pageSource()).contains("Do the dishes");
   }
 }
