@@ -1,0 +1,9 @@
+<h1>$category.getName()</h1>
+
+<h1>Put in here the new name for the category</h1>
+
+<form action="/categories/$category.getId()/edit" method="post">
+  <label for="newDescription">Category new description</label>
+  <input id="newDescription" name="newDescription" type="text">
+  <button type="submit" class="btn btn-success">Edit description</button>
+</form>

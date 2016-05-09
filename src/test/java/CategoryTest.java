@@ -101,4 +101,13 @@ public class CategoryTest {
     assertEquals(0, myTask.getCategories().size());
   }
 
+  @Test
+  public void update_updatesCategoryName() {
+    Category myCategory = new Category("Household chores");
+    myCategory.save();
+    int categoryId = myCategory.getId();
+    myCategory.edit("Lawn chores");
+    assertEquals("Lawn chores", Category.find(categoryId).getName());
+  }
+
 }

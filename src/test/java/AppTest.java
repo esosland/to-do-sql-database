@@ -94,4 +94,18 @@ public class AppTest extends FluentTest {
     assertThat(pageSource()).contains("Household chores");
   }
 
+  @Test
+  public void categoryIsEdited(){
+    Category testCategory = new Category("Household chores");
+    testCategory.save();
+    testCategory.edit("Work stuff");
+    String url = String.format("http://localhost:4567/categories/%d", testCategory.getId());
+    goTo(url);
+    click("a", withText("Edit this category"));
+    fill("#newDescription").with("Work stuff");
+    submit(".btn");
+    assertThat(pageSource()).contains("Work stuff");
+
+  }
+
 }

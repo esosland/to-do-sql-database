@@ -19,7 +19,7 @@ public class Category {
   }
 
   public static List<Category> all() {
-    String sql = "SELECT id, name FROM categories";
+    String sql = "SELECT * FROM categories";
     try(Connection con = DB.sql2o.open()) {
         return con.createQuery(sql).executeAndFetch(Category.class);
     }
@@ -38,7 +38,7 @@ public class Category {
 
   public void save() {
     try(Connection con = DB.sql2o.open()) {
-      String sql = "INSERT INTO categories(name) VALUES (:name)";
+      String sql = "INSERT INTO categories (name) VALUES (:name)";
       this.id = (int) con.createQuery(sql, true)
       .addParameter("name", this.name)
       .executeUpdate()
@@ -100,4 +100,13 @@ public class Category {
     }
   }
 
+  public void edit(String newDescription){
+    try (Connection con = DB.sql2o.open()){
+      String sql = "UPDATE categories SET name = :name WHERE id = :id";
+      con.createQuery(sql)
+      .addParameter("name", newDescription)
+      .addParameter("id", this.id)
+      .executeUpdate();
+    }
+  }
 }

@@ -49,7 +49,7 @@ public class App {
 
     get("/categories/:id", (request, response) -> {
       Map<String, Object> model = new HashMap<String, Object>();
-      Category category = Category.find(Integer.parseInt(request.params("id")));
+      Category category = Category.find(Integer.parseInt(request.params(":id")));
       model.put("category", category);
       model.put("allTasks", Task.all());
       model.put("template", "templates/category.vtl");
@@ -107,6 +107,24 @@ public class App {
       Task task = Task.find(taskId);
       task.addCategory(category);
       response.redirect("/tasks/" + taskId);
+      return null;
+    });
+
+    get("/categories/:id/edit", (request, response) -> {
+      Map<String, Object> model = new HashMap<String, Object>();
+      Integer categoryId = Integer.parseInt(request.params(":id"));
+      model.put("category", Category.find(categoryId));
+      model.put("template", "templates/category-edit.vtl");
+      return new ModelAndView(model, layout);
+    }, new VelocityTemplateEngine());
+
+    post("/categories/:id/edit", (request, response) -> {
+      Integer categoryId = Integer.parseInt(request.params(":id"));
+      String categoryNewName = request.queryParams("newDescription");
+      System.out.println(categoryNewName);
+      Category newCategory = Category.find(categoryId);
+      newCategory.edit(categoryNewName);
+      response.redirect("/categories/" + categoryId);
       return null;
     });
 
