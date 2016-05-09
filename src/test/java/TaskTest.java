@@ -1,23 +1,13 @@
 import org.sql2o.*;
 import org.junit.*;
 import static org.junit.Assert.*;
+import java.util.List;
 
 public class TaskTest {
 
-  @Before
-  public void setUp() {
-    DB.sql2o = new Sql2o("jdbc:postgresql://localhost:5432/to_do_ak_test", null, null);
-  }
+  @Rule
+  public DatabaseRule database = new DatabaseRule();
 
-  @After
-  public void tearDown() {
-    try(Connection con = DB.sql2o.open()) {
-      String deleteTasksQuery = "DELETE FROM tasks *;";
-      String deleteCategoriesQuery = "DELETE FROM categories *;";
-      con.createQuery(deleteTasksQuery).executeUpdate();
-      con.createQuery(deleteCategoriesQuery).executeUpdate();
-    }
-  }
 
   @Test
   public void Task_instantiatesCorrectly_true() {
@@ -67,12 +57,56 @@ public class TaskTest {
   }
 
   @Test
-  public void save_savesCategoryIdIntoDB_true() {
+  public void update_updatesTaskDescription_true() {
+    Task myTask = new Task("Mow the lawn");
+    myTask.save();
+    myTask.update("Take a nap");
+    assertEquals("Take a nap", Task.find(myTask.getId()).getDescription());
+  }
+
+  @Test
+  public void delete_deletesTask_true() {
+    Task myTask = new Task("Mow the lawn");
+    myTask.save();
+    int myTaskId = myTask.getId();
+    myTask.delete();
+    assertEquals(null, Task.find(myTaskId));
+  }
+
+  @Test
+  public void addCategory_addsCategoryToTask() {
     Category myCategory = new Category("Household chores");
     myCategory.save();
-    Task myTask = new Task("Mow the lawn", myCategory.getId());
+    Task myTask = new Task("Mow the lawn");
     myTask.save();
-    Task savedTask = Task.find(myTask.getId());
-    assertEquals(savedTask.getCategoryId(), myCategory.getId());
+    myTask.addCategory(myCategory);
+    Category savedCategory = myTask.getCategories().get(0);
+    assertTrue(myCategory.equals(savedCategory));
   }
+
+  @Test
+  public void getCategories_returnsAllCategories_List() {
+    Category myCategory = new Category("Household chores");
+    myCategory.save();
+    Task myTask = new Task("Mow the lawn");
+    myTask.save();
+    myTask.addCategory(myCategory);
+    List savedCategories = myTask.getCategories();
+    assertEquals(1, savedCategories.size());
+  }
+
+  @Test
+  public void delete_deletesAllTasksAndCategoriesAssociations() {
+    Category myCategory = new Category("Household chores");
+    myCategory.save();
+    Task myTask = new Task("Mow the lawn");
+    myTask.save();
+    myTask.addCategory(myCategory);
+    myTask.delete();
+    assertEquals(0, myCategory.getTasks().size());
+  }
+
+
+
+
 }
